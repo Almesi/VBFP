@@ -15,17 +15,17 @@ Implements IFunction
 
 Private p_Value As Variant
 
-Friend Property Let Value(ByVal n_Value As Variant)
+Friend Sub Initialize(ByVal n_Value As Variant)
     If IsObject(n_Value) Then
         Set p_Value = n_Value
     Else
         Let p_Value = n_Value
     End If
-End Property
+End Sub
 
 Public Function Create(ByVal Value As Variant) As ValueFunction
     Set Create = New ValueFunction
-    Create.Value = Value
+    Call Create.Initialize(Value)
 End Function
 
 Private Function IFunction_Evaluate(ParamArray Arguments() As Variant) As Variant
