@@ -32,10 +32,14 @@ Private Function IFunction_Evaluate(ParamArray Arguments() As Variant) As Varian
     Call VBFPAssign(IFunction_Evaluate, p_Value)
 End Function
 
+Private Function IFunction_EvaluateArr(ByRef Arguments() As IFunction) As Variant
+    Call VBFPAssign(IFunction_Evaluate, p_Value)
+End Function
+
 Private Function IFunction_Run(ParamArray Arguments() As Variant) As IFunction
     Set IFunction_Run = Me
 End Function
 
-Private Function IFunction_Bind(ParamArray Arguments() As Variant) As IFunction
-    Set IFunction_Bind = Me
+Private Function IFunction_RunArr(ByRef Arguments() As IFunction) As IFunction
+    Set IFunction_Run = Me
 End Function

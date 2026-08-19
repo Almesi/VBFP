@@ -74,3 +74,15 @@ Public Function Tail(ByVal Elements As IFunction) As IFunction
 
     Set Tail = VBFPValue(Result)
 End Function
+
+' Only pass in IFunction for Functions
+Public Function Pipe(ByVal Value As IFunction, ParamArray Functions() As Variant) As IFunction
+    Dim Result As IFunction
+    Set Result = Value
+
+    Dim i      As Long
+    For i = 0 To UBound(Functions)
+        Set Result = Functions(i).Run(Result)
+    Next i
+    Set Pipe = Result
+End Function

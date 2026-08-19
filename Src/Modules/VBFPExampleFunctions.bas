@@ -43,6 +43,23 @@ Public Function Minimum(ByVal Num1 As IFunction, ByVal Num2 As IFunction) As IFu
     Set Minimum = VBFPValue(Min(Num1.Evaluate(), Num2.Evaluate()))
 End Function
 
+Public Function Factorial(ByVal Count As IFunction) As IFunction
+    Dim N As Long
+    N = Count.Evaluate()
+
+    If N <= 1 Then
+        Set Factorial = VBFPValue(1)
+        Exit Function
+    End If
+
+    Dim Previous As IFunction
+    Dim Result As Long
+
+    Set Previous  = Factorial(VBFPValue(N - 1))
+    Result        = N * Previous.Evaluate()
+    Set Factorial = VBFPValue(Result)
+End Function
+
 
 ' ============================================================
 ' Comparison
