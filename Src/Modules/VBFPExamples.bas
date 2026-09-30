@@ -212,6 +212,15 @@ Public Sub ExampleMemoized()
     Call VBFPPrintExtra("2*2 = ", Func.Run(VBFPValue(2), VBFPValue(2)))
 End Sub
 
+Public Sub ExampleNormalFunctions()
+    Debug.Print "=== Normal Function ==="
+
+    Dim Func      As IFunction: Set Func = NamedFunction.Create("NormalAdd", False, False)
+    Call VBFPPrintExtra("3 = ", Func.Run(1, 2))
+
+End Sub
+
+
 Public Sub RunExamples()
     ExampleArithmetic
     ExampleBinding
@@ -227,4 +236,5 @@ Public Sub RunExamples()
     ExamplePipeline
     ExampleMemoized
     ExampleCurry
+    ExampleNormalFunctions
 End Sub

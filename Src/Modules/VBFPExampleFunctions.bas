@@ -7,6 +7,10 @@ Option Explicit
 ' Arithmetic
 ' ============================================================
 
+Public Function NormalAdd(ByVal A As Long, ByVal B As Long) As Long
+    NormalAdd = A + B
+End Function
+
 Public Function Add(ByVal Num1 As IFunction, ByVal Num2 As IFunction) As IFunction
     Set Add = VBFPValue(Num1.Evaluate() + Num2.Evaluate())
 End Function

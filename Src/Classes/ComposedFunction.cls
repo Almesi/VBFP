@@ -27,30 +27,26 @@ End Function
 
 Private Function IFunction_Evaluate(ParamArray Arguments() As Variant) As Variant
     Dim Temp() As Variant
-    Dim Passed() As IFunction
 
     Temp = Arguments
-    Passed = ArgumentsToFunctions(Temp)
-    Call VBFPAssign(IFunction_Evaluate, Run(Passed).Evaluate())
+    Call VBFPAssign(IFunction_Evaluate, Run(Temp).Evaluate())
 End Function
 
-Private Function IFunction_EvaluateArr(ByRef Arguments() As IFunction) As Variant
+Private Function IFunction_EvaluateArr(ByRef Arguments() As Variant) As Variant
     Call VBFPAssign(IFunction_EvaluateArr, Run(Arguments).Evaluate())
 End Function
 
 Private Function IFunction_Run(ParamArray Arguments() As Variant) As IFunction
     Dim Temp() As Variant
-    Dim Passed() As IFunction
 
     Temp = Arguments
-    Passed = ArgumentsToFunctions(Temp)
-    Call VBFPAssign(IFunction_Run, Run(Passed))
+    Call VBFPAssign(IFunction_Run, Run(Temp))
 End Function
 
-Private Function IFunction_RunArr(ByRef Arguments() As IFunction) As IFunction
+Private Function IFunction_RunArr(ByRef Arguments() As Variant) As IFunction
     Call VBFPAssign(IFunction_RunArr, Run(Arguments))
 End Function
 
-Private Function Run(ByRef Arguments() As IFunction) As IFunction
+Private Function Run(ByRef Arguments() As Variant) As IFunction
     Set Run = p_Outer.Run(p_Inner.RunArr(Arguments))
 End Function

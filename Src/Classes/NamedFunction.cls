@@ -12,44 +12,51 @@ Option Explicit
 
 Implements IFunction
 
-Private FunctionName As String
+Private FunctionName      As String
+Private ExpectIFunction   As Boolean
+Private ArgIsIFunction    As Boolean
 
-Friend Sub Initialize(ByVal n_Name As String)
-    FunctionName = n_Name
-End Sub
-
-Public Function Create(ByVal FunctionName As String) As NamedFunction
+Public Function Create(ByVal FunctionName As String, Optional ByVal n_ExpectIFunction As Boolean = True, Optional ByVal n_ArgIsIFunction As Boolean = True) As NamedFunction
     Set Create = New NamedFunction
-    Call Create.Initialize(FunctionName)
+    Call Create.Initialize(FunctionName, n_ExpectIFunction, n_ArgIsIFunction)
 End Function
+
+Friend Sub Initialize(ByVal n_Name As String, Optional ByVal n_ExpectIFunction As Boolean = True, Optional ByVal n_ArgIsIFunction As Boolean = True)
+    Let FunctionName    = n_Name
+    Let ExpectIFunction = n_ExpectIFunction
+    Let ArgIsIFunction = n_ArgIsIFunction
+End Sub
 
 Private Function IFunction_Evaluate(ParamArray Arguments() As Variant) As Variant
     Dim Temp() As Variant
-    Dim Passed() As IFunction
 
     Temp = Arguments
-    Passed = ArgumentsToFunctions(Temp)
-    Call VBFPAssign(IFunction_Evaluate, RunFunction(Passed).Evaluate())
+    Call VBFPAssign(IFunction_Evaluate, IFunction_EvaluateArr(Temp).Evaluate())
 End Function
 
-Private Function IFunction_EvaluateArr(ByRef Arguments() As IFunction) As Variant
-    Call VBFPAssign(IFunction_EvaluateArr, RunFunction(Arguments).Evaluate())
+Private Function IFunction_EvaluateArr(ByRef Arguments() As Variant) As Variant
+    Call VBFPAssign(IFunction_EvaluateArr, IFunction_RunArr(Arguments).Evaluate())
 End Function
 
 Private Function IFunction_Run(ParamArray Arguments() As Variant) As IFunction
     Dim Temp() As Variant
-    Dim Passed() As IFunction
 
     Temp = Arguments
-    Passed = ArgumentsToFunctions(Temp)
-    Call VBFPAssign(IFunction_Run, RunFunction(Passed))
+    Call VBFPAssign(IFunction_Run, IFunction_RunArr(Temp))
 End Function
 
-Private Function IFunction_RunArr(ByRef Arguments() As IFunction) As IFunction
-    Call VBFPAssign(IFunction_RunArr, RunFunction(Arguments))
+Private Function IFunction_RunArr(ByRef Arguments() As Variant) As IFunction
+    Dim Passed() As Variant
+
+    Passed = FuncArgumentsToArguments(Arguments, ExpectIFunction, ArgIsIFunction)
+    If ArgIsIFunction Then
+        Call VBFPAssign(IFunction_RunArr, RunFunction(Passed))
+    Else
+        Call VBFPAssign(IFunction_RunArr, ValueFunction.Create(RunFunction(Passed)))
+    End If
 End Function
 
-Private Function RunFunction(ByRef A() As IFunction) As Variant
+Private Function RunFunction(ByRef A() As Variant) As Variant
     Dim Count As Long
     Count = UBound(A)
     Select Case Count + 1

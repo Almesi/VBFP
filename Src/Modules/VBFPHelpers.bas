@@ -18,12 +18,9 @@ End Function
 
 Public Function VBFPBoundF(ByVal Func As IFunction, ParamArray Arguments() As Variant) As IFunction
     Dim Temp() As Variant
-    Dim Passed() As IFunction
-
     Temp = Arguments
-    Passed = ArgumentsToFunctions(Temp)
 
-    Set VBFPBoundF = BoundFunction.CreateArr(Func, Passed)
+    Set VBFPBoundF = BoundFunction.CreateArr(Func, Temp)
 End Function
 Public Function VBFPBound(ByVal Func As IFunction, ParamArray Arguments() As Variant) As BoundFunction
     Dim Temp() As Variant
@@ -44,21 +41,13 @@ End Function
 
 Public Function VBFPCurriedF(ByVal Func As IFunction, ParamArray Arguments() As Variant) As IFunction
     Dim Temp() As Variant
-    Dim Passed() As IFunction
-
     Temp = Arguments
-    Passed = ArgumentsToFunctions(Temp)
-
-    Set VBFPCurriedF = CurriedFunction.CreateArr(Func, Passed)
+    Set VBFPCurriedF = CurriedFunction.CreateArr(Func, Temp)
 End Function
 Public Function VBFPCurried(ByVal Func As IFunction, ParamArray Arguments() As Variant) As BoundFunction
     Dim Temp() As Variant
-    Dim Passed() As IFunction
-
     Temp = Arguments
-    Passed = ArgumentsToFunctions(Temp)
-
-    Set VBFPCurried = CurriedFunction.CreateArr(Func, Passed)
+    Set VBFPCurried = CurriedFunction.CreateArr(Func, Temp)
 End Function
 
 Public Function VBFPMemoizedF(ByVal Func As IFunction) As IFunction
@@ -127,6 +116,38 @@ Public Function ArgumentsToFunctions(ByRef Arguments() As Variant) As IFunction(
     Next i
 
     ArgumentsToFunctions = Result
+End Function
+
+Public Function FuncArgumentsToArguments(ByRef Arguments() As Variant, ByVal ExpectIFunction As Boolean, ByVal ArgIsIFunction As Boolean) As Variant()
+    Dim Result() As Variant
+    Dim Count As Long
+    Dim i As Long
+
+    Count = USize(Arguments)
+    If Count < 0 Then
+        FuncArgumentsToArguments = Result
+        Exit Function
+    End If
+
+    ReDim Result(Count)
+
+    If ExpectIFunction Then
+        For i = 0 To Count
+            Dim Temp As IFunction
+            Set Temp = Arguments(i)
+            If ArgIsIFunction Then
+                Call VBFPAssign(Result(i), Temp)
+            Else
+                Call VBFPAssign(Result(i), Temp.Evaluate())
+            End If
+        Next i
+    Else
+        For i = 0 To Count
+            Call VBFPAssign(Result(i), Arguments(i))
+        Next i
+    End If
+
+    FuncArgumentsToArguments = Result
 End Function
 
 Public Function USize(ByRef X As Variant) As Long

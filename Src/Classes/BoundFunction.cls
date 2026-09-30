@@ -13,62 +13,52 @@ Option Explicit
 Implements IFunction
 
 Private p_Function As IFunction
-Private p_Bound()  As IFunction
-
-Friend Sub Initialize(ByVal n_Function As IFunction, ByRef n_Bound() As IFunction)
-    Set p_Function = n_Function
-    p_Bound        = n_Bound
-End Sub
+Private p_Bound()  As Variant
 
 Public Function Create(ByVal n_Function As IFunction, ParamArray Arguments() As Variant) As BoundFunction
-    Dim Temp() As Variant
-    Dim Bound() As IFunction
-
+    Dim Temp()  As Variant
     Temp = Arguments
-    Bound = ArgumentsToFunctions(Temp)
-    
-    Set Create = CreateArr(n_Function, Bound)
+    Set Create = CreateArr(n_Function, Temp)
 End Function
 
-Public Function CreateArr(ByVal n_Function As IFunction, ByRef Arguments() As IFunction) As BoundFunction
+Public Function CreateArr(ByVal n_Function As IFunction, ByRef Arguments() As Variant) As BoundFunction
     Set CreateArr = New BoundFunction
     Call CreateArr.Initialize(n_Function, Arguments)
 End Function
 
+Friend Sub Initialize(ByVal n_Function As IFunction, ByRef n_Bound() As Variant)
+    Set p_Function = n_Function
+    p_Bound        = n_Bound
+End Sub
+
 Private Function IFunction_Evaluate(ParamArray Arguments() As Variant) As Variant
     Dim Temp() As Variant
-    Dim Passed() As IFunction
-
     Temp = Arguments
-    Passed = ArgumentsToFunctions(Temp)
-    Call VBFPAssign(IFunction_Evaluate, Run(Passed).Evaluate())
+    Call VBFPAssign(IFunction_Evaluate, IFunction_EvaluateArr(Temp))
 End Function
 
-Private Function IFunction_EvaluateArr(ByRef Arguments() As IFunction) As Variant
-    Call VBFPAssign(IFunction_EvaluateArr, Run(Arguments).Evaluate())
+Private Function IFunction_EvaluateArr(ByRef Arguments() As Variant) As Variant
+    Call VBFPAssign(IFunction_EvaluateArr, IFunction_RunArr(Arguments).Evaluate())
 End Function
 
 Private Function IFunction_Run(ParamArray Arguments() As Variant) As IFunction
     Dim Temp() As Variant
-    Dim Passed() As IFunction
-
     Temp = Arguments
-    Passed = ArgumentsToFunctions(Temp)
-    Call VBFPAssign(IFunction_Run, Run(Passed))
+    Call VBFPAssign(IFunction_Run, IFunction_RunArr(Temp))
 End Function
 
-Private Function IFunction_RunArr(ByRef Arguments() As IFunction) As IFunction
+Private Function IFunction_RunArr(ByRef Arguments() As Variant) As IFunction
     Call VBFPAssign(IFunction_RunArr, Run(Arguments))
 End Function
 
-Private Function Run(ByRef Arguments() As IFunction) As IFunction
-    Dim Combined() As IFunction
+Private Function Run(ByRef Arguments() As Variant) As IFunction
+    Dim Combined() As Variant
     Combined = Combine(p_Bound, Arguments)
 
     Set Run = p_Function.RunArr(Combined)
 End Function
 
-Private Function Combine(ByRef First() As IFunction, ByRef Second() As IFunction) As IFunction()
+Private Function Combine(ByRef First() As Variant, ByRef Second() As Variant) As Variant()
     Dim FirstCount  As Long
     Dim SecondCount As Long
     Dim TotalCount  As Long
@@ -77,25 +67,25 @@ Private Function Combine(ByRef First() As IFunction, ByRef Second() As IFunction
     SecondCount = USize(Second)
 
     If FirstCount < 0 And SecondCount < 0 Then
-        Dim Emptyy() As IFunction
+        Dim Emptyy() As Variant
         Combine = Emptyy
         Exit Function
     End If
 
     TotalCount = (FirstCount + 1) + (SecondCount + 1)
 
-    Dim Result() As IFunction
+    Dim Result() As Variant
     ReDim Result(TotalCount - 1)
 
     Dim i As Long
     For i = 0 To FirstCount
-        Set Result(i) = First(i)
+        Call VBFPAssign(Result(i), First(i))
     Next i
 
     Dim Position As Long
     Position = i
     For i = 0 To SecondCount
-        Set Result(Position + i) = Second(i)
+        Call VBFPAssign(Result(Position + i), Second(i))
     Next i
 
     Combine = Result

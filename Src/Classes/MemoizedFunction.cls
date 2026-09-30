@@ -44,31 +44,27 @@ End Function
 
 Private Function IFunction_Evaluate(ParamArray Arguments() As Variant) As Variant
     Dim Temp() As Variant
-    Dim Passed() As IFunction
 
     Temp = Arguments
-    Passed = ArgumentsToFunctions(Temp)
-    Call VBFPAssign(IFunction_Evaluate, Run(Passed).Evaluate())
+    Call VBFPAssign(IFunction_Evaluate, Run(Temp).Evaluate())
 End Function
 
-Private Function IFunction_EvaluateArr(ByRef Arguments() As IFunction) As Variant
+Private Function IFunction_EvaluateArr(ByRef Arguments() As Variant) As Variant
     Call VBFPAssign(IFunction_EvaluateArr, Run(Arguments).Evaluate())
 End Function
 
 Private Function IFunction_Run(ParamArray Arguments() As Variant) As IFunction
     Dim Temp() As Variant
-    Dim Passed() As IFunction
 
     Temp = Arguments
-    Passed = ArgumentsToFunctions(Temp)
-    Call VBFPAssign(IFunction_Run, Run(Passed))
+    Call VBFPAssign(IFunction_Run, Run(Temp))
 End Function
 
-Private Function IFunction_RunArr(ByRef Arguments() As IFunction) As IFunction
+Private Function IFunction_RunArr(ByRef Arguments() As Variant) As IFunction
     Call VBFPAssign(IFunction_RunArr, Run(Arguments))
 End Function
 
-Private Function Run(ByRef Arguments() As IFunction) As IFunction
+Private Function Run(ByRef Arguments() As Variant) As IFunction
     Dim Current As Object
     Dim Key     As String
     Dim i       As Long
@@ -98,10 +94,16 @@ Private Function ResultKey() As String
     ResultKey = ChrW(0) & "RESULT" & ChrW(0)
 End Function
 
-Private Function ArgumentKey(ByVal Argument As IFunction) As String
-    Dim Value As Variant
-    Value = Argument.Evaluate()
-    ArgumentKey = ValueKey(Value)
+Private Function ArgumentKey(ByVal Argument As Variant) As String
+    On Error GoTo Error
+    Dim Temp As IFunction
+    Set Temp = Argument
+
+    ArgumentKey = ValueKey(Temp.Evaluate())
+    Exit Function
+
+    Error:
+    ArgumentKey = ValueKey(Argument)
 End Function
 
 Private Function ValueKey(ByVal Value As Variant) As String
