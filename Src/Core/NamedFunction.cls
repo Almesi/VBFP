@@ -31,7 +31,7 @@ Private Function IFunction_Evaluate(ParamArray Arguments() As Variant) As Varian
     Dim Temp() As Variant
 
     Temp = Arguments
-    Call VBFPAssign(IFunction_Evaluate, IFunction_EvaluateArr(Temp).Evaluate())
+    Call VBFPAssign(IFunction_Evaluate, IFunction_RunArr(Temp).Evaluate())
 End Function
 
 Private Function IFunction_EvaluateArr(ByRef Arguments() As Variant) As Variant
@@ -58,7 +58,7 @@ End Function
 
 Private Function RunFunction(ByRef A() As Variant) As Variant
     Dim Count As Long
-    Count = UBound(A)
+    Count = USize(A)
     Select Case Count + 1
         Case 00: Call VBFPAssign(RunFunction, Application.Run(FunctionName))
         Case 01: Call VBFPAssign(RunFunction, Application.Run(FunctionName, A(0)))
